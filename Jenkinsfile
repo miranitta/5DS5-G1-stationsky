@@ -22,6 +22,12 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
+
+        stage('compile') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
         
 
         stage('Static Analysis') {
