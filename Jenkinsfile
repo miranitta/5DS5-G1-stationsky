@@ -23,7 +23,7 @@ pipeline {
             steps {
                 
                      withSonarQubeEnv('sonarscanner') { // Replace 'SonarQubeServer' with your actual SonarQube server name in Jenkins
-                        withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+                        withCredentials([string(credentialsId: 'projetdev', variable: 'SONAR_TOKEN')]) {
                             sh '''mvn sonar:sonar \
                                 -Dsonar.projectKey=Devops-CICD \
                                 -Dsonar.login=${SONAR_TOKEN}'''
