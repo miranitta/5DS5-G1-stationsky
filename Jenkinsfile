@@ -19,12 +19,7 @@ pipeline {
                 sh 'mvn clean compile'
             }
         }
-        stage('Nexus Stage') {
-            steps {
-                sh 'mvn install'
-                sh 'mvn clean deploy -DskipTests=true'
-            }
-        }
+        
         stage('SonarQube Analysis') {
             steps {
                 
