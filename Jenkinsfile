@@ -24,10 +24,6 @@ pipeline {
                 '''
             }
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> da4d98671c580d2de67a5bc9a17c92b9730a293a
         stage('Static Analysis') {
             agent { label 'agent1' }
             environment {
