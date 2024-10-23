@@ -33,6 +33,12 @@ pipeline {
                 sh 'mvn sonar:sonar -Dsonar.projectKey=5DS5:G1:staionsky -Dsonar.host.url=http://192.168.50.4:9000 -Dsonar.login=squ_30e9a55af118eb0b2867ad85a7144dce2b391900'
             }
         }
+
+        stage('NEXUS'){
+            steps {
+                sh 'mvn deploy'
+            }
+        }
     }
 
     post {
