@@ -4,11 +4,9 @@ pipeline {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
     }
-    
     stages {
         stage('Checkout') {
             steps {
-                // Get code from the GitHub repository
                 git(
                     url: 'https://github.com/miranitta/5DS5-G1-stationsky.git', 
                     branch: 'rinedlazreg-G1-stationsky',
@@ -26,6 +24,10 @@ pipeline {
                 '''
             }
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> da4d98671c580d2de67a5bc9a17c92b9730a293a
         stage('Static Analysis') {
             agent { label 'agent1' }
             environment {
@@ -43,11 +45,5 @@ pipeline {
                 }
             }
         }
-
-      
-
-    
     }
-
-    
 }
