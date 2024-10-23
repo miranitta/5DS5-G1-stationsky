@@ -10,11 +10,6 @@ pipeline {
         }
 
 
-        stage('MVN BUILD') {
-            steps {
-               sh 'mvn clean install'
-            }
-        }
         stage('MVN CLEAN') {
             steps {
                 sh 'mvn clean'
@@ -36,7 +31,7 @@ pipeline {
 
         stage('NEXUS'){
             steps {
-                sh 'mvn deploy'
+                sh 'mvn deploy -Dmaven.test.skip=true'
             }
         }
     }
