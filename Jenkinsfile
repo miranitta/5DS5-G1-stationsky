@@ -20,6 +20,12 @@ pipeline {
             steps {
                 sh 'mvn compile'
             }
+            post {
+                success {
+                    echo "Now Archiving"
+                    archiveArtifacts artifacts: '**/*.jar'
+                }
+            }
         }
 
 
@@ -37,10 +43,6 @@ pipeline {
     }
 
     post {
-        always {
-            // Archive the built JAR files
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-        }
         success {
             echo 'Build was successful!'
         }
