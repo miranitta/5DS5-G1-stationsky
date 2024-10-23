@@ -71,6 +71,16 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+<!-- Deploy to Nexus -->
+	<distributionManagement>
+		<repository>
+			<id>deploymentRepo</id>
+			<name>Nexus Repository</name>
+			<url>http://192.168.33.11:9001/repository/maven-central-repository/</url>
+		</repository>
+	</distributionManagement>
+		
     </dependencies>
 
 	<build>
