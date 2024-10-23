@@ -124,13 +124,4 @@
 
         <finalName>5DS5-G1-stationsky</finalName>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>deploymentRepo</id>
-            <name>Nexus Repository</name>
-            <url>http://192.168.33.11:9001/repository/maven-central-repository/</url>
-        </repository>
-    </distributionManagement>
-
 </project>
