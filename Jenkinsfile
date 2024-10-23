@@ -41,5 +41,35 @@ pipeline {
                 }
             }
         }
+
+ stage('Upload to Nexus') {
+            agent { label 'agent1' }
+            steps {
+                script {
+                    echo "Deploying to Nexus..."
+                    nexusArtifactUploader(
+                        nexusVersion: 'nexus3',
+                        protocol: 'http',
+                        nexusUrl: "192.168.33.11:9001",
+                        groupId: 'tn.esprit.spring',
+                        artifactId: '5DS5-G1-stationsky',
+                        version: '1.0',
+                        repository: "maven-central-repository",
+                        credentialsId: "nexus-credentials",
+                        artifacts: [
+                            [
+                                artifactId: '5DS5-G1-stationsky',
+                                classifier: '',
+                                file: 'target/5DS5-G1-stationsky.jar', 
+                                type: 'jar'
+                            ]
+                        ]
+                    )
+                    echo "Deployment to Nexus completed!"
+                }
+            }
+        }
+
+        
     }
 }
