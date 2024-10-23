@@ -4,6 +4,10 @@ pipeline {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
     }
+     environment {
+        DOCKER_IMAGE = 'rinedlazreg-g1-stationsky'  // Dynamic Docker image name
+        IMAGE_TAG = 'latest'  // Image tag (e.g., 'latest' or version)
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -71,7 +75,45 @@ stage('Upload to Nexus') {
                     echo "Deployment to Nexus completed!"
                 }
             }
+        } 
+
+ stage('Build Docker Image') {
+            agent { label 'agent1' }
+            steps {
+                script {
+                    def nexusUrl = "http://192.168.33.11:9001"
+                    def groupId = "tn.esprit.spring"
+                    def artifactId = "5DS5-G1-stationsky"
+                    def version = "1.0"
+
+                    sh """
+                        docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} \
+                        --build-arg NEXUS_URL=${nexusUrl} \
+                        --build-arg GROUP_ID=${groupId} \
+                        --build-arg ARTIFACT_ID=${artifactId} \
+                        --build-arg VERSION=${version} .
+                    """
+                }
+            }
         }
+ stage('Push Docker Image') {
+            agent { label 'agent1' }
+            environment {
+                DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
+            }
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh "docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} $DOCKER_USERNAME/${DOCKER_IMAGE}:${IMAGE_TAG}"
+                        sh "docker push $DOCKER_USERNAME/${DOCKER_IMAGE}:${IMAGE_TAG}"
+                    }
+                }
+            }
+        }
+
+
+
 
         
     }
