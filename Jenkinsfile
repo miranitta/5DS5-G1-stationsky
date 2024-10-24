@@ -5,7 +5,7 @@ pipeline {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
     }
-    
+
     environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
@@ -30,11 +30,13 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarscanner') { // Replace 'SonarQubeServer' with your actual SonarQube server name in Jenkins
+                withSonarQubeEnv('sonarscanner') {
                     withCredentials([string(credentialsId: 'projetdev', variable: 'SONAR_TOKEN')]) {
-                        sh '''mvn sonar:sonar \
-                            -Dsonar.projectKey=Devops-CICD \
-                            -Dsonar.login=${SONAR_TOKEN}'''
+                        sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=Devops-CICD \
+                                -Dsonar.login=${SONAR_TOKEN}
+                        '''
                     }
                 }
             }
@@ -43,14 +45,17 @@ pipeline {
         stage('PUBLISH TO NEXUS') {
             steps {
                 script {
-                    pom = readMavenPom file: "pom.xml"
-                    filesByGlob = findFiles(glob: "target/*.${pom.packaging}")
+                    def pomContent = readFile('pom.xml')
+                    def pom = new XmlSlurper().parseText(pomContent)
+                    def packaging = pom.packaging.text() ?: 'jar'
+
+                    filesByGlob = findFiles(glob: "target/*.${packaging}")
                     echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length}"
                     artifactPath = filesByGlob[0].path
                     artifactExists = fileExists artifactPath
 
                     if (artifactExists) {
-                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version: ${pom.version}"
+                        echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${packaging}, version: ${pom.version}"
 
                         nexusArtifactUploader(
                             nexusVersion: NEXUS_VERSION,
@@ -64,10 +69,11 @@ pipeline {
                                 [artifactId: pom.artifactId,
                                  classifier: '',
                                  file: artifactPath,
-                                 type: pom.packaging
+                                 type: packaging
                                 ]
                             ]
                         )
+
                     } else {
                         error "*** File: ${artifactPath}, could not be found"
                     }
