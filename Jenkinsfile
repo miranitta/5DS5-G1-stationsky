@@ -5,6 +5,20 @@ pipeline {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
     }
+    
+    environment{
+        NEXUS_VERSION="nexus3"
+
+        NEXUS_PROTOCOL="http"
+
+        NEXUS_URL="192.168.50.4:8081"
+
+        NEXUS_REPOSITORY="maven-releases"
+
+        NEXUS_CREDENTIAL_ID="nexusCredential"
+
+
+    }
 
     stages {
         stage('GIT') {
@@ -34,31 +48,43 @@ pipeline {
                
             }
         }
-    stage('Upload to Nexus') {
+
+         stage('PUBLISH TO NEXUS'){
             steps {
-                script {
-                    echo "Deploying to Nexus..."
+                script{
+                pom = readMavenPom file: "pom.xml";
+                filesByGlob = findFiles(glob: "target/*.${pom.packaging}");
+                echo "${filesByGlob[0].name} ${filesByGlob[0].path} ${filesByGlob[0].directory} ${filesByGlob[0].length}";
+                artifactPath = filesByGlob[0].path;
+                artifactExists = fileExists artifactPath;
+
+                if (artifactExists) {
+                    echo "*** File: ${artifactPath}, group: ${pom.groupId}, packaging: ${pom.packaging}, version: ${pom.version}";
+
                     nexusArtifactUploader(
-                        nexusVersion: 'nexus3',
-                        protocol: 'http',
-                        nexusUrl: "192.168.50.4:8081",
-                        groupId: 'tn.esprit.spring',
-                        artifactId: '5DS5-G1-stationsky',
-                        version: '1.0',
-                        repository: "maven-central-repository",
-                        credentialsId: "nexusCredential",
+                        nexusVersion: NEXUS_VERSION,
+                        protocol: NEXUS_PROTOCOL,
+                        nexusUrl: NEXUS_URL,
+                        groupId: pom.groupId,
+                        version: pom.version,
+                        repository: NEXUS_REPOSITORY,
+                        credentialsId: NEXUS_CREDENTIAL_ID,
                         artifacts: [
-                            [
-                                artifactId: '5DS5-G1-stationsky',
-                                classifier: '',
-                                file: 'target/5DS5-G1-stationsky.jar', 
-                                type: 'jar'
+                            [artifactId: pom.artifactId,
+                             classifier: '',
+                             file: artifactPath,
+                             type: pom.packaging
                             ]
                         ]
-                    )
-                    echo "Deployment to Nexus completed!"
+                    );
+
+                } else {
+                    error "*** File: ${artifactPath}, could not be found";
+                }
                 }
             }
         }
+    }
+        
     }
 }
