@@ -34,13 +34,6 @@ pipeline {
                
             }
         }
-        
-        stage('Nexus Stage') {
-            steps {
-                sh 'mvn install'
-                sh 'mvn clean deploy -DskipTests=true'
-            }
-        }
     
     }
 }
