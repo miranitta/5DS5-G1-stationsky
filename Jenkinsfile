@@ -28,5 +28,19 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarscanner') {
+                    withCredentials([string(credentialsId: 'projetdev', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=Devops-CICD \
+                                -Dsonar.login=${SONAR_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
+
     }
 }
