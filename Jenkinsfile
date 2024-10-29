@@ -29,37 +29,18 @@ pipeline {
             }
         }
 
+        stage('Test Stage') {
+            steps {
+                echo 'Running Unit Tests with JUnit and Mockito...'
+                sh 'mvn test'
+            }
+        }
+
         stage('Package Stage') {
             steps {
                 sh 'mvn package -DskipTests'
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker Image...'
-                script {
-                    // Ensure the JAR is copied to the Docker context
-                    sh 'cp target/gestion-station-ski-1.0.jar .'
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
-            }
-        }
-
-        stage('Push Docker Image to Docker Hub') {
-    steps {
-        echo 'Pushing Docker Image to Docker Hub...'
-        script {
-            withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                // Use credentials without Groovy interpolation
-                sh '''
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                '''
-                sh "docker push ${DOCKER_IMAGE}"
-            }
-        }
-    }
-}
 
         stage('SonarQube Analysis') {
             steps {
@@ -73,6 +54,42 @@ pipeline {
                     }
                 }
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker Image...'
+                script {
+                    sh 'cp target/gestion-station-ski-1.0.jar .'
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                echo 'Pushing Docker Image to Docker Hub...'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        '''
+                        sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs() // Cleans the workspace after build
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs.'
         }
     }
 }
