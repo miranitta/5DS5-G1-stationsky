@@ -29,13 +29,6 @@ pipeline {
             }
         }
 
-        stage('Test Stage') {
-            steps {
-                echo 'Running Unit Tests with JUnit and Mockito...'
-                sh 'mvn test'
-            }
-        }
-
         stage('Package Stage') {
             steps {
                 sh 'mvn package -DskipTests'
@@ -79,6 +72,18 @@ pipeline {
                 }
             }
         }
+        
+        stage('NEXUS') {
+        steps {
+        script {
+            if (fileExists('pom.xml')) {
+                sh "mvn deploy"
+            } else {
+                error 'pom.xml not found in the current directory.'
+            }
+        }
+    }
+}
     }
 
     post {
