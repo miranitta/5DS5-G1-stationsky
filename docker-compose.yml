@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql:8.0
@@ -14,10 +16,23 @@ services:
     networks:
       - spring-network
 
+  app:
+    image: khiarianwar/anwarkhiari_5ds5
+    container_name: spring-app
+    depends_on:
+      - mysql
+    ports:
+      - "8096:8096"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: springuser
+      SPRING_DATASOURCE_PASSWORD: springpass
+    networks:
+      - spring-network
 
 volumes:
   mysql_data: {}
 
 networks:
   spring-network:
-    driver: bridge  # Explicitly use bridge networking
+    driver: bridge
