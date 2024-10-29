@@ -29,19 +29,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarscanner') {
-                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            mvn sonar:sonar \
-                                -Dsonar.projectKey=Devops-CICD \
-                                -Dsonar.login=${SONAR_TOKEN}
-                        '''
-                    }
-                }
-            }
-        }
+        
 
         stage('Build Docker Image') {
             steps {
@@ -59,6 +47,19 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                         sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarscanner') {
+                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=Devops-CICD \
+                                -Dsonar.login=${SONAR_TOKEN}
+                        '''
                     }
                 }
             }
