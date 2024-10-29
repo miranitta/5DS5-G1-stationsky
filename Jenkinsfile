@@ -29,12 +29,18 @@ pipeline {
             }
         }
 
-        
+        stage('Package Stage') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker Image...'
                 script {
+                    // Ensure the JAR is copied to the Docker context
+                    sh 'cp target/gestion-station-ski-1.0.jar .'
                     sh "docker build -t ${DOCKER_IMAGE} ."
                 }
             }
@@ -51,6 +57,7 @@ pipeline {
                 }
             }
         }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarscanner') {
