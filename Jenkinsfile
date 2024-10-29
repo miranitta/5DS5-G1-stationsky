@@ -12,7 +12,7 @@ pipeline {
         NEXUS_URL = "192.168.50.4:8081"
         NEXUS_REPOSITORY = "maven-central-repository"
         NEXUS_CREDENTIAL_ID = "nexusCredential"
-        DOCKER_IMAGE = 'khiarianwar/anwarkhiari_5DS5'
+        DOCKER_IMAGE = 'khiarianwar/anwarkhiari_5ds5'
     }
 
     stages {
