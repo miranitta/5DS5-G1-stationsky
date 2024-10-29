@@ -12,6 +12,7 @@ pipeline {
         NEXUS_URL = "192.168.50.4:8081"
         NEXUS_REPOSITORY = "maven-central-repository"
         NEXUS_CREDENTIAL_ID = "nexusCredential"
+        DOCKER_IMAGE = 'khiarianwar/anwarkhiari_5DS5'
     }
 
     stages {
@@ -28,6 +29,27 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker Image...'
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                echo 'Pushing Docker Image to Docker Hub...'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarscanner') {
@@ -41,7 +63,7 @@ pipeline {
                 }
             }
         }
-
+        
         
 
     }
