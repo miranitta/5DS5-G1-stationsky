@@ -5,6 +5,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tn.esprit.spring.entities.Skier;
+import tn.esprit.spring.entities.Subscription;
 import tn.esprit.spring.entities.TypeSubscription;
 import tn.esprit.spring.repositories.ISkierRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tn.esprit.spring.services.SkierServicesImpl;
 
@@ -39,7 +39,13 @@ class SkierServiceImplTestMockito {
 
     @BeforeEach
     void setUp() {
-        skier = new Skier(1L, "John", "Doe", LocalDate.of(1990, 1, 1), "New York", null, null, null);
+        // Create a valid Subscription object
+        Subscription subscription = new Subscription();
+        subscription.setStartDate(LocalDate.now());
+        subscription.setTypeSub(TypeSubscription.ANNUAL); // Set a valid subscription type
+
+        // Initialize the Skier object with a subscription
+        skier = new Skier(1L, "John", "Doe", LocalDate.of(1990, 1, 1), "New York", subscription, null, null);
     }
 
     @Test

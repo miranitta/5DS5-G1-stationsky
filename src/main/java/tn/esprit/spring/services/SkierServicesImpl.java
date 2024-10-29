@@ -31,6 +31,12 @@ public class SkierServicesImpl implements ISkierServices {
 
     @Override
     public Skier addSkier(Skier skier) {
+        // Check if subscription is null
+        if (skier.getSubscription() == null) {
+            throw new IllegalArgumentException("Subscription cannot be null");
+        }
+
+        // Check subscription type and set end date accordingly
         switch (skier.getSubscription().getTypeSub()) {
             case ANNUAL:
                 skier.getSubscription().setEndDate(skier.getSubscription().getStartDate().plusYears(1));
@@ -41,14 +47,25 @@ public class SkierServicesImpl implements ISkierServices {
             case MONTHLY:
                 skier.getSubscription().setEndDate(skier.getSubscription().getStartDate().plusMonths(1));
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid subscription type");
         }
+
         return skierRepository.save(skier);
     }
 
     @Override
     public Skier assignSkierToSubscription(Long numSkier, Long numSubscription) {
         Skier skier = skierRepository.findById(numSkier).orElse(null);
+        if (skier == null) {
+            throw new IllegalArgumentException("Skier not found with ID: " + numSkier);
+        }
+
         Subscription subscription = subscriptionRepository.findById(numSubscription).orElse(null);
+        if (subscription == null) {
+            throw new IllegalArgumentException("Subscription not found with ID: " + numSubscription);
+        }
+
         skier.setSubscription(subscription);
         return skierRepository.save(skier);
     }
@@ -56,13 +73,21 @@ public class SkierServicesImpl implements ISkierServices {
     @Override
     public Skier addSkierAndAssignToCourse(Skier skier, Long numCourse) {
         Skier savedSkier = skierRepository.save(skier);
-        Course course = courseRepository.getById(numCourse);
-        Set<Registration> registrations = savedSkier.getRegistrations();
-        for (Registration r : registrations) {
-            r.setSkier(savedSkier);
-            r.setCourse(course);
-            registrationRepository.save(r);
+
+        Course course = courseRepository.findById(numCourse).orElse(null);
+        if (course == null) {
+            throw new IllegalArgumentException("Course not found with ID: " + numCourse);
         }
+
+        Set<Registration> registrations = savedSkier.getRegistrations();
+        if (registrations != null) {
+            for (Registration r : registrations) {
+                r.setSkier(savedSkier);
+                r.setCourse(course);
+                registrationRepository.save(r);
+            }
+        }
+
         return savedSkier;
     }
 
@@ -79,14 +104,19 @@ public class SkierServicesImpl implements ISkierServices {
     @Override
     public Skier assignSkierToPiste(Long numSkieur, Long numPiste) {
         Skier skier = skierRepository.findById(numSkieur).orElse(null);
-        Piste piste = pisteRepository.findById(numPiste).orElse(null);
-        try {
-            skier.getPistes().add(piste);
-        } catch (NullPointerException exception) {
-            Set<Piste> pisteList = new HashSet<>();
-            pisteList.add(piste);
-            skier.setPistes(pisteList);
+        if (skier == null) {
+            throw new IllegalArgumentException("Skier not found with ID: " + numSkieur);
         }
+
+        Piste piste = pisteRepository.findById(numPiste).orElse(null);
+        if (piste == null) {
+            throw new IllegalArgumentException("Piste not found with ID: " + numPiste);
+        }
+
+        if (skier.getPistes() == null) {
+            skier.setPistes(new HashSet<>());
+        }
+        skier.getPistes().add(piste);
 
         return skierRepository.save(skier);
     }

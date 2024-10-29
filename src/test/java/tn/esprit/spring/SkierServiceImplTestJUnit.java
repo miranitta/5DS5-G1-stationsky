@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tn.esprit.spring.entities.Skier;
+import tn.esprit.spring.entities.Subscription;
 import tn.esprit.spring.entities.TypeSubscription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,13 @@ class SkierServiceImplTestJUnit {
 
     @BeforeEach
     void setUp() {
-        skier = new Skier(null, "John", "Doe", LocalDate.of(1990, 1, 1), "New York", null, null, null);
+        // Create a subscription
+        Subscription subscription = new Subscription();
+        subscription.setStartDate(LocalDate.now());
+        subscription.setTypeSub(TypeSubscription.ANNUAL); // Set a valid subscription type
+
+        // Initialize the Skier object with a subscription
+        skier = new Skier(null, "John", "Doe", LocalDate.of(1990, 1, 1), "New York", subscription, null, null);
     }
 
     @Test
