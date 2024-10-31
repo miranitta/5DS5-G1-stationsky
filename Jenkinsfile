@@ -34,6 +34,21 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
+        stage('Run JUnit Tests') {
+            steps {
+                echo 'Running JUnit Tests...'
+                // Run specific JUnit tests
+                sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
+            }
+        }
+
+        stage('Run Mockito Tests') {
+            steps {
+                echo 'Running Mockito Tests...'
+                // Run specific Mockito tests
+                sh 'mvn -Dtest=SkierServiceImplTestMockito test'
+            }
+        }
 
         stage('SonarQube Analysis') {
             steps {
