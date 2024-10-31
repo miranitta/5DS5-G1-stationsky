@@ -8,16 +8,16 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=stationSki
     ports:
-      - 3306:3306
+      - 3307:3306
     volumes:
       - db:/var/lib/mysql
-  app-timesheet:
+  app-stationsky:
     depends_on:
       - mysqldb
     image: ilyesmarghli/stationsky:1.0.0
     restart: on-failure
     ports:
-      - 8089:889
+      - 8090:8089
     environment:
       SPRING_APPLICATION_JSON: '{
         "spring.datasource.url" : "jdbc:mysql://localhost:3306/stationSki?createDatabaseIfNotExist=true",
