@@ -85,6 +85,32 @@ pipeline {
                 }
             }
         }
+        stage('Deploy Image') {
+            steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'Docker-Jenkins', 
+                                             usernameVariable: 'DOCKER_ilUSERNAME', 
+                                             passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh '''
+                echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                docker push ilyesmarghli/stationsky:1.0.0
+                docker logout
+                '''
+            }
+        }
+
+         stage('Docker Compose') {
+            steps {
+                script {
+                    sh '''
+                    docker-compose down
+                    docker-compose up -d
+                    '''
+                }
+            }
+        }
+    }
+}
     }
 
     post {
