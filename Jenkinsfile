@@ -78,6 +78,13 @@ pipeline {
                 }
             }
         }
+        stage('Building image'){
+            steps{
+                script{
+                    sh 'docker build -t ilyesmarghli/stationsky:1.0.0'
+                }
+            }
+        }
     }
 
     post {
