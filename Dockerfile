@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Copy the JAR from the current directory to the image
-COPY gestion-station-ski-1.0.jar app.jar
+ADD gestion-station-ski-1.0.jar app.jar
 
 # Expose the application's port
 EXPOSE 8096
