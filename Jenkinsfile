@@ -88,6 +88,18 @@ pipeline {
             }
         }
 
+        stage('Install Docker Compose') {
+            steps {
+                script {
+                    // Commandes pour vérifier l'installation de Docker Compose
+                    sh '''
+                        # Vérifier l'installation
+                        docker-compose --version
+                    '''
+                }
+            }
+        }
+
         stage('Run Docker Compose') {
             steps {
                 sh 'docker-compose up -d'
