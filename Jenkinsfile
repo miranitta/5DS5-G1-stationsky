@@ -64,29 +64,29 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker Image...'
-                script {
-                    sh 'cp target/gestion-station-ski-1.0.jar .'
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
-            }
-        }
+     //   stage('Build Docker Image') {
+     //       steps {
+    //          echo 'Building Docker Image...'
+    //            script {
+    //                sh 'cp target/gestion-station-ski-1.0.jar .'
+    //                sh "docker build -t ${DOCKER_IMAGE} ."
+     //           }
+      //      }
+      //  }
 
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                echo 'Pushing Docker Image to Docker Hub...'
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        '''
-                        sh "docker push ${DOCKER_IMAGE}"
-                    }
-                }
-            }
-        }
+      //  stage('Push Docker Image to Docker Hub') {
+      //      steps {
+       //         echo 'Pushing Docker Image to Docker Hub...'
+        //        script {
+         //           withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+          //              sh '''
+           //                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+           //             '''
+           //             sh "docker push ${DOCKER_IMAGE}"
+            //        }
+            //    }
+           // }
+       // }
 
         stage('Install Docker Compose') {
             steps {
