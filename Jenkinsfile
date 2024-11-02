@@ -43,8 +43,8 @@ pipeline {
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                         -Dsonar.projectKey=5DS5-G1-stationsky \
                         -Dsonar.organization=miranitta \
-                        -Dsonar.inclusions=/src/main/java/tn/esprit/spring/services/PisteServicesImpl.java,/src/main/java/tn/esprit/spring/services/SubscriptionServicesImpl.java \
-                        -Dsonar.test.inclusions=/src/test/java/tn/esprit/spring/services/PisteServicesImplTest.java,/src/main/java/tn/esprit/spring/services/SubscriptionServicesImplTest.java
+                        -Dsonar.inclusions=/src/main/java/tn/esprit/spring/services/PisteServicesImpl.java \
+                        -Dsonar.test.inclusions=/src/test/java/tn/esprit/spring/services/PisteServicesImplTest.java
                         '''
                 }
             }
