@@ -20,10 +20,6 @@ services:
     restart: on-failure
     ports:
       - 8089:8089
-
-
-
-
     stdin_open: true
     tty: true
     environment:
