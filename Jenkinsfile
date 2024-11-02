@@ -113,6 +113,14 @@ stage('Upload to Nexus') {
                     }
                 }
             }
-        }       
+        }
+
+  stage('Docker Compose Up') {
+            steps {
+                script {         
+                    sh 'docker compose up -d'
+                }
+            }
+        }            
     }
 }
