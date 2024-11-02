@@ -1,1 +1,1 @@
-# 5Arctic-G1-StationSKI
+# 5DS5-G1-stationsky

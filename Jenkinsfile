@@ -4,22 +4,22 @@ pipeline {
         jdk 'JAVA_HOME'
         maven 'M2_HOME'
     }
-    environment {
-        DOCKER_IMAGE = 'nassimfatnassi-g1-stationski'  
-        IMAGE_TAG = '1.1'  
+     environment {
+        DOCKER_IMAGE = 'rinedlazreg-g1-stationsky'  // Dynamic Docker image name
+        IMAGE_TAG = '1.1'  // Image tag (e.g., 'latest' or version)
     }
     stages {
         stage('Checkout') {
             steps {
                 git(
-                    url: 'https://github.com/nassimfatnassi1999/5Arctic-G1-StationSKI.git', 
-                    branch: 'nassimFatnassi-G1-SKI',
+                    url: 'https://github.com/miranitta/5DS5-G1-stationsky.git', 
+                    branch: 'rinedlazreg-G1-stationsky',
                     credentialsId: 'github-credentials'
                 )
             }
         }
 
-        stage('Clean, Build & Test') {
+       stage('Clean, Build & Test') {
             agent { label 'agent1' }
             steps {
                 sh '''
@@ -28,11 +28,10 @@ pipeline {
                 '''
             }
         }
-        
         stage('Static Analysis SonarCloud') {
             agent { label 'agent1' }
             environment {
-                SONAR_URL = "https://sonarcloud.io" // URL de SonarCloud
+            SONAR_URL = "https://sonarcloud.io" // URL de SonarCloud
             }
             steps {
                 withCredentials([string(credentialsId: 'sonar-cloud-credentials', variable: 'SONAR_TOKEN')]) {
@@ -42,16 +41,18 @@ pipeline {
                         -Dsonar.host.url=${SONAR_URL} \
                         -Dsonar.java.binaries=target/classes \
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                        -Dsonar.projectKey=5Arctic-G1-StationSKI \
-                        -Dsonar.organization=nassimfatnassi1999 \
+                        -Dsonar.projectKey=5DS5-G1-stationsky \
+                        -Dsonar.organization=miranitta \
                         -Dsonar.inclusions=/src/main/java/tn/esprit/spring/services/PisteServicesImpl.java,/src/main/java/tn/esprit/spring/services/SubscriptionServicesImpl.java \
                         -Dsonar.test.inclusions=/src/test/java/tn/esprit/spring/services/PisteServicesImplTest.java,/src/main/java/tn/esprit/spring/services/SubscriptionServicesImplTest.java
-                    '''
+                        '''
                 }
             }
         }
 
-        stage('Upload to Nexus') {
+
+
+stage('Upload to Nexus') {
             agent { label 'agent1' }
             steps {
                 script {
@@ -61,15 +62,15 @@ pipeline {
                         protocol: 'http',
                         nexusUrl: "192.168.33.11:9001",
                         groupId: 'tn.esprit.spring',
-                        artifactId: '5Arctic-G1-StationSKI',
+                        artifactId: '5DS5-G1-stationsky',
                         version: '1.1',
                         repository: "maven-central-repository",
                         credentialsId: "nexus-credentials",
                         artifacts: [
                             [
-                                artifactId: '5Arctic-G1-StationSKI',
+                                artifactId: '5DS5-G1-stationsky',
                                 classifier: '',
-                                file: 'target/5Arctic-G1-StationSKI.jar', 
+                                file: 'target/5DS5-G1-stationsky.jar', 
                                 type: 'jar'
                             ]
                         ]
@@ -77,15 +78,15 @@ pipeline {
                     echo "Deployment to Nexus completed!"
                 }
             }
-        }
+        } 
 
-        stage('Build Docker Image') {
+ stage('Build Docker Image') {
             agent { label 'agent1' }
             steps {
                 script {
                     def nexusUrl = "http://192.168.33.11:9001"
                     def groupId = "tn.esprit.spring"
-                    def artifactId = "5Arctic-G1-StationSKI"
+                    def artifactId = "5DS5-G1-stationsky"
                     def version = "1.1"
 
                     sh """
@@ -98,22 +99,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Scan with Trivy') {
-             agent { label 'agent1' }
-            steps {
-                script {
-                    // Lancer le scan Trivy et générer le rapport JSON
-                    sh 'trivy image --scanners vuln --timeout 3600s -f json -o trivy_report.json ${DOCKER_IMAGE}:${IMAGE_TAG}'
-                    sh 'python3 /home/vagrant/json-to-html.py'
-                    sh 'cp /home/vagrant/trivy_report.html ${WORKSPACE}/trivy_report.html'
-                    slackUploadFile channel: '#jenkins-messg', filePath: 'trivy_report.html', initialComment: 'Rapport Trivy en HTML'
-                }
-            }
-        }
-
-        
-         stage('Push Docker Image') {
+ stage('Push Docker Image') {
             agent { label 'agent1' }
             environment {
                 DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
@@ -127,67 +113,6 @@ pipeline {
                     }
                 }
             }
-        }
-
-        stage('Deploy to AKS') {
-            agent { label 'agent2' }
-            steps {
-                script {
-                    def clusterExists = sh(script: 'kubectl get nodes', returnStatus: true) == 0
-
-                    if (clusterExists) {
-                        echo "Cluster exists. Deploying the application."
-
-                        // Deploy the application using manifest_files
-                        sh '''
-                            cd manifest_files
-                            kubectl apply -f deploy_backend_mysql.yml                        '''
-                    } else {
-                        echo "Cluster does not exist. Creating with Terraform."
-                        sh '''
-                            cd /home/vagrant/myAks-cluster
-                            terraform init
-                            terraform apply -auto-approve
-                        '''
-                        sleep 60
-                        sh 'az aks get-credentials --resource-group myResourceGroup --name myAKSCluster --overwrite-existing'
-
-                        // Deploy the application using manifest_files
-                        sh ''' 
-                            cd manifest_files
-                            kubectl apply -f deploy_backend_mysql.yml
-                        '''
-                    }
-                     sleep 70
-                    // Get LoadBalancer IP of the backend service
-                    def backendIP = sh(
-                     script: "kubectl get svc backend-service | awk '/backend-service/ {print \$4}'",
-                        returnStdout: true
-                    ).trim()
-                    env.BACKEND_IP = backendIP
-
-                }
-            }
-        }
+        }       
     }
-
-  post {
-    success {
-        script {
-            slackSend(
-                channel: '#jenkins-messg', 
-                message: "Le build a réussi : ${env.JOB_NAME} #${env.BUILD_NUMBER} ! Image pushed: ${DOCKER_IMAGE}:${IMAGE_TAG} successfully. Backend IP: ${env.BACKEND_IP}"
-            )
-        }
-    }
-    failure {
-        script {
-            slackSend(
-                channel: '#jenkins-messg', 
-                message: "Le build a échoué : ${env.JOB_NAME} #${env.BUILD_NUMBER}."
-            )
-        }
-    }
-}
-
 }
