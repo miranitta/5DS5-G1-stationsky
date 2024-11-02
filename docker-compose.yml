@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   mysql:
     image: mysql:latest
@@ -24,5 +23,5 @@ services:
       - stationsky-network
 
 networks:
-  stationski-network:
+  stationsky-network:  # Corrected network name
     driver: bridge
