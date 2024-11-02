@@ -108,17 +108,17 @@ pipeline {
 
         
         
-        stage('NEXUS') {
-        steps {
-        script {
-            if (fileExists('pom.xml')) {
-                sh "mvn deploy"
-            } else {
-                error 'pom.xml not found in the current directory.'
-            }
-        }
-    }
-}
+//        stage('NEXUS') {
+//        steps {
+//        script {
+  //          if (fileExists('pom.xml')) {
+  //              sh "mvn deploy"
+  //          } else {
+  //              error 'pom.xml not found in the current directory.'
+   //         }
+   //     }
+   // }
+//}
         
         stage('Grafana Prometheus') {
             steps {
