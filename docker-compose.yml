@@ -19,7 +19,7 @@ services:
     image: khiarianwar/anwarkhiari_5ds5:latest
     restart: on-failure
     ports:
-      - 8089:8089
+      - 8088:8088
     stdin_open: true
     tty: true
     environment:
