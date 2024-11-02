@@ -99,6 +99,13 @@ pipeline {
         }
     }
 }
+
+        stage('Building and deploying using docker-compose') { 
+            steps { 
+               sh 'docker-compose up -d'
+            }
+        }
+        
         stage('Grafana Prometheus') {
             steps {
                 sh 'docker start prometheus'
