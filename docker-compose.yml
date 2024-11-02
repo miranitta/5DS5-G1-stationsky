@@ -4,11 +4,13 @@ services:
   # database application service
   mysqldb:
     image: mysql:8.0
-    restart: unless-stopped
-    ports:
-      - 3307:3307
+    container_name: database
+    restart: on-failure
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" 
+      MYSQL_DATABASE: db
+    ports:
+      - "3307:3307"  
     volumes:
       - db:/var/lib/mysql
 
