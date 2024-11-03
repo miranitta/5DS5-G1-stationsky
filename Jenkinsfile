@@ -36,6 +36,11 @@ pipeline {
             }
         }
 
+        stage('Test & Jacoco Static Analysis') {
+            junit 'target/surefire-reports/**/*.xml'
+            jacoco()
+        }
+
         //stage('Run JUnit Tests') {
         //    steps {
         //        echo 'Running JUnit Tests...'
