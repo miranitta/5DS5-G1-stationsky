@@ -6,7 +6,7 @@ pipeline {
     }
      environment {
         DOCKER_IMAGE = 'rinedlazreg-g1-stationsky'  // Dynamic Docker image name
-        IMAGE_TAG = 'latest'  // Image tag (e.g., 'latest' or version)
+        IMAGE_TAG = '0.0.1'  // Image tag (e.g., 'latest' or version)
     }
     stages {
         stage('Checkout') {

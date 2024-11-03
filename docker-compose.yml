@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql:latest
@@ -10,7 +12,7 @@ services:
     networks:
       - my-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "mysql"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -18,12 +20,10 @@ services:
       - mysql-data:/var/lib/mysql
 
   backend:
-    build:
-      context: /home/vagrant/jenkins-agent1/workspace/5DS5-G1-stationsky-backend
-      dockerfile: Dockerfile
+    image: rinedlazreg353/rinedlazreg-g1-stationsky:0.0.1
     container_name: backend-container
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://192.168.33.11:3306/stationsky?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stationsky?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_JPA_SHOW_SQL: "true"
