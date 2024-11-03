@@ -13,7 +13,7 @@ pipeline {
         NEXUS_REPOSITORY = "maven-central-repository"
         NEXUS_CREDENTIAL_ID = "nexusCredential"
         DOCKER_IMAGE = 'khiarianwar/anwarkhiari_5ds5'
-        EMAIL_RECIPIENT = 'abdelml623@gmail.com' // Replace with the actual email address
+        EMAIL_RECIPIENT = 'khiarianwar@gmail.com' // Replace with the actual email address
     }
 
     stages {
@@ -36,94 +36,94 @@ pipeline {
             }
         }
 
-        stage('Run JUnit Tests') {
-            steps {
-                echo 'Running JUnit Tests...'
-                sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
-            }
-        }
+        //stage('Run JUnit Tests') {
+        //    steps {
+        //        echo 'Running JUnit Tests...'
+        //        sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
+        //    }
+        //}
 
-        stage('Run Mockito Tests') {
-            steps {
-                echo 'Running Mockito Tests...'
-                sh 'mvn -Dtest=SkierServiceImplTestMockito test'
-            }
-        }
+       // stage('Run Mockito Tests') {
+       //     steps {
+       //         echo 'Running Mockito Tests...'
+        //        sh 'mvn -Dtest=SkierServiceImplTestMockito test'
+        //    }
+        //}
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarscanner') {
-                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            mvn sonar:sonar \
-                                -Dsonar.projectKey=Devops-CICD \
-                                -Dsonar.login=${SONAR_TOKEN}
-                        '''
-                    }
-                }
-            }
-        }
+      //  stage('SonarQube Analysis') {
+        //    steps {
+         //       withSonarQubeEnv('sonarscanner') {
+          //          withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+            //            sh '''
+             //               mvn sonar:sonar \
+              //                  -Dsonar.projectKey=Devops-CICD \
+              //                  -Dsonar.login=${SONAR_TOKEN}
+              //          '''
+               //     }
+              //  }
+           // }
+      //  }
 
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker Image...'
-                script {
-                    sh 'cp target/gestion-station-ski-1.0.jar .'
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
-            }
-        }
+      //  stage('Build Docker Image') {
+        //    steps {
+        //        echo 'Building Docker Image...'
+         //       script {
+           //         sh 'cp target/gestion-station-ski-1.0.jar .'
+           //         sh "docker build -t ${DOCKER_IMAGE} ."
+           //     }
+           // }
+      //  }
 
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                echo 'Pushing Docker Image to Docker Hub...'
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        '''
-                        sh "docker push ${DOCKER_IMAGE}"
-                    }
-                }
-            }
-        }
+      //  stage('Push Docker Image to Docker Hub') {
+        //    steps {
+            //    echo 'Pushing Docker Image to Docker Hub...'
+              //  script {
+               //     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                   //     sh '''
+                       //     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                       // '''
+                   //     sh "docker push ${DOCKER_IMAGE}"
+                 //   }
+              //  }
+           // }
+      //  }
 
-        stage('Install Docker Compose') {
-            steps {
-                script {
+       // stage('Install Docker Compose') {
+         //   steps {
+            //    script {
                     // Commandes pour vérifier l'installation de Docker Compose
-                    sh '''
-                        # Vérifier l'installation
-                        docker-compose --version
-                    '''
-                }
-            }
-        }
+               //     sh '''
+                //        # Vérifier l'installation
+                //        docker-compose --version
+                 //   '''
+              //  }
+          //  }
+      //  }
 
-        stage('Run Docker Compose') {
-            steps {
-                sh 'docker-compose up -d'
-            }
-        }
+     //   stage('Run Docker Compose') {
+      //      steps {
+        //        sh 'docker-compose up -d'
+      //      }
+       // }
 
-        stage('NEXUS') {
-            steps {
-                script {
-                    if (fileExists('pom.xml')) {
-                        sh "mvn deploy"
-                    } else {
-                        error 'pom.xml not found in the current directory.'
-                    }
-                }
-            }
-        }
+        //stage('NEXUS') {
+           // steps {
+             //   script {
+                //    if (fileExists('pom.xml')) {
+                 //       sh "mvn deploy"
+                 //   } else {
+                  //      error 'pom.xml not found in the current directory.'
+                 //   }
+               // }
+           // }
+      //  }
 
-        stage('Grafana Prometheus') {
-            steps {
-                sh 'docker start prometheus'
-                sh 'docker start grafana'
-            }
-        }
+      //  stage('Grafana Prometheus') {
+        //    steps {
+            //    sh 'docker start prometheus'
+           //     sh 'docker start grafana'
+          //  }
+       // }
 
         // Add the Send Email Notification stage
         stage('Send Email Notification') {
