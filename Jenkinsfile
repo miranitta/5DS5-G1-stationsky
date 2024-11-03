@@ -47,8 +47,6 @@ pipeline {
            }
        }
 
-/*
-
 stage('Upload to Nexus') {
             agent { label 'agent1' }
             steps {
@@ -111,7 +109,7 @@ stage('Upload to Nexus') {
                 }
             }
         }
-
+/*
   stage('Docker Compose Up') {
             agent { label 'agent1' }
             steps {
