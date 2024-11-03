@@ -13,6 +13,7 @@ pipeline {
         NEXUS_REPOSITORY = "maven-central-repository"
         NEXUS_CREDENTIAL_ID = "nexusCredential"
         DOCKER_IMAGE = 'khiarianwar/anwarkhiari_5ds5'
+        EMAIL_RECIPIENT = 'abdelml623@gmail.com' // Replace with the actual email address
     }
 
     stages {
@@ -34,10 +35,10 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
+
         stage('Run JUnit Tests') {
             steps {
                 echo 'Running JUnit Tests...'
-                // Run specific JUnit tests
                 sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
             }
         }
@@ -45,7 +46,6 @@ pipeline {
         stage('Run Mockito Tests') {
             steps {
                 echo 'Running Mockito Tests...'
-                // Run specific Mockito tests
                 sh 'mvn -Dtest=SkierServiceImplTestMockito test'
             }
         }
@@ -66,7 +66,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-              echo 'Building Docker Image...'
+                echo 'Building Docker Image...'
                 script {
                     sh 'cp target/gestion-station-ski-1.0.jar .'
                     sh "docker build -t ${DOCKER_IMAGE} ."
@@ -106,24 +106,32 @@ pipeline {
             }
         }
 
-        
-        
         stage('NEXUS') {
-        steps {
-        script {
-            if (fileExists('pom.xml')) {
-                sh "mvn deploy"
-            } else {
-                error 'pom.xml not found in the current directory.'
+            steps {
+                script {
+                    if (fileExists('pom.xml')) {
+                        sh "mvn deploy"
+                    } else {
+                        error 'pom.xml not found in the current directory.'
+                    }
+                }
             }
         }
-    }
-}
-        
+
         stage('Grafana Prometheus') {
             steps {
                 sh 'docker start prometheus'
                 sh 'docker start grafana'
+            }
+        }
+
+        // Add the Send Email Notification stage
+        stage('Send Email Notification') {
+            steps {
+                echo 'Sending Email Notification...'
+                mail to: "${env.EMAIL_RECIPIENT}",
+                     subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
+                     body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
             }
         }
     }
@@ -134,9 +142,15 @@ pipeline {
         }
         success {
             echo 'Pipeline completed successfully!'
+            mail to: "${env.EMAIL_RECIPIENT}",
+                 subject: "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
+                 body: "Good news! The build ${currentBuild.fullDisplayName} completed successfully."
         }
         failure {
             echo 'Pipeline failed. Please check the logs.'
+            mail to: "${env.EMAIL_RECIPIENT}",
+                 subject: "Jenkins Pipeline Failure: ${currentBuild.fullDisplayName}",
+                 body: "The build ${currentBuild.fullDisplayName} failed. Please check the Jenkins logs for details."
         }
     }
 }
