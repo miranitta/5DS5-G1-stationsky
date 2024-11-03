@@ -36,33 +36,40 @@ pipeline {
             }
         }
 
-        //stage('Run JUnit Tests') {
-        //    steps {
-        //        echo 'Running JUnit Tests...'
-        //        sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
-        //    }
-        //}
+        stage('Run JUnit Tests') {
+            steps {
+                echo 'Running JUnit Tests...'
+                sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
+            }
+        }
 
-       // stage('Run Mockito Tests') {
-       //     steps {
-       //         echo 'Running Mockito Tests...'
-        //        sh 'mvn -Dtest=SkierServiceImplTestMockito test'
-        //    }
-        //}
+        stage('Run Mockito Tests') {
+            steps {
+                echo 'Running Mockito Tests...'
+                sh 'mvn -Dtest=SkierServiceImplTestMockito test'
+            }
+        }
 
-      //  stage('SonarQube Analysis') {
-        //    steps {
-         //       withSonarQubeEnv('sonarscanner') {
-          //          withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-            //            sh '''
-             //               mvn sonar:sonar \
-              //                  -Dsonar.projectKey=Devops-CICD \
-              //                  -Dsonar.login=${SONAR_TOKEN}
-              //          '''
-               //     }
-              //  }
-           // }
-      //  }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarscanner') {
+                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=Devops-CICD \
+                                -Dsonar.login=${SONAR_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Test & Jacoco Static Analysis') {
+            steps {
+                junit 'target/surefire-reports/**/*.xml'
+                jacoco()
+            }
+        }
 
       //  stage('Build Docker Image') {
         //    steps {
