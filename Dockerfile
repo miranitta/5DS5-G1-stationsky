@@ -1,14 +1,18 @@
-# Use a multi-stage build for efficiency
-FROM maven:3.8.4-openjdk-11 AS build
-WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
-RUN mvn clean install -DskipTests
+# Use an official Java runtime as a parent image
+FROM eclipse-temurin:17-jre-jammy
 
-# Second stage: Running the application
-FROM openjdk:11-jre-slim
+# Set working directory in the container
 WORKDIR /app
-COPY --from=build /app/target/5DS5-G1-stationsky.jar /app/5DS5-G1-stationsky.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/kaddem.jar"]
+
+# Download the .jar from Nexus
+RUN apt-get update && apt-get install -y curl
+
+# Replace <nexus-url>, <repository-path>, <artifact-id>, <version>, and <extension>
+RUN curl -o app.jar "http://192.168.33.10:8081/repository/stationsky/tn/esprit/spring/5DS5-G1-stationsky/1.0/5DS5-G1-stationsky-1.0.jar"
+
+
+# Expose the port that the application runs on
+EXPOSE 9060
+
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
