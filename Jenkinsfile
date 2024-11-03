@@ -35,6 +35,20 @@ pipeline {
                 sh 'mvn package -DskipTests'
             }
         }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarscanner') {
+                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            mvn sonar:sonar \
+                                -Dsonar.projectKey=Devops-CICD \
+                                -Dsonar.login=${SONAR_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
 
         stage('Run JUnit Tests') {
             steps {
@@ -50,20 +64,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarscanner') {
-                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            mvn sonar:sonar \
-                                -Dsonar.projectKey=Devops-CICD \
-                                -Dsonar.login=${SONAR_TOKEN}
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('Test & Jacoco Static Analysis') {
             steps {
                 junit 'target/surefire-reports/**/*.xml'
@@ -71,66 +71,66 @@ pipeline {
             }
         }
 
-      //  stage('Build Docker Image') {
-        //    steps {
-        //        echo 'Building Docker Image...'
-         //       script {
-           //         sh 'cp target/gestion-station-ski-1.0.jar .'
-           //         sh "docker build -t ${DOCKER_IMAGE} ."
-           //     }
-           // }
-      //  }
+        stage('NEXUS') {
+            steps {
+                script {
+                    if (fileExists('pom.xml')) {
+                        sh "mvn deploy"
+                    } else {
+                        error 'pom.xml not found in the current directory.'
+                    }
+                }
+            }
+        }
 
-      //  stage('Push Docker Image to Docker Hub') {
-        //    steps {
-            //    echo 'Pushing Docker Image to Docker Hub...'
-              //  script {
-               //     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                   //     sh '''
-                       //     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                       // '''
-                   //     sh "docker push ${DOCKER_IMAGE}"
-                 //   }
-              //  }
-           // }
-      //  }
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker Image...'
+                script {
+                    sh 'cp target/gestion-station-ski-1.0.jar .'
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
 
-       // stage('Install Docker Compose') {
-         //   steps {
-            //    script {
-                    // Commandes pour vérifier l'installation de Docker Compose
-               //     sh '''
-                //        # Vérifier l'installation
-                //        docker-compose --version
-                 //   '''
-              //  }
-          //  }
-      //  }
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                echo 'Pushing Docker Image to Docker Hub...'
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        '''
+                        sh "docker push ${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
 
-     //   stage('Run Docker Compose') {
-      //      steps {
-        //        sh 'docker-compose up -d'
-      //      }
-       // }
+        stage('Install Docker Compose') {
+            steps {
+                script {
+                     Commandes pour vérifier l'installation de Docker Compose
+                    sh '''
+                        # Vérifier l'installation
+                        docker-compose --version
+                    '''
+                }
+            }
+        }
 
-        //stage('NEXUS') {
-           // steps {
-             //   script {
-                //    if (fileExists('pom.xml')) {
-                 //       sh "mvn deploy"
-                 //   } else {
-                  //      error 'pom.xml not found in the current directory.'
-                 //   }
-               // }
-           // }
-      //  }
+        stage('Run Docker Compose') {
+            steps {
+                sh 'docker-compose up -d'
+            }
+        }
 
-      //  stage('Grafana Prometheus') {
-        //    steps {
-            //    sh 'docker start prometheus'
-           //     sh 'docker start grafana'
-          //  }
-       // }
+        stage('Grafana Prometheus') {
+            steps {
+                sh 'docker start prometheus'
+                sh 'docker start grafana'
+            }
+        }
 
         // Add the Send Email Notification stage
         stage('Send Email Notification') {
