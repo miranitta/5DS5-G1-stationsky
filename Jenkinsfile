@@ -7,7 +7,10 @@ pipeline {
      environment {
         DOCKER_IMAGE = 'seifallahfathalli-g1-stationsky'  // Dynamic Docker image name
         IMAGE_TAG = 'latest'  // Image tag (e.g., 'latest' or version)
+        SONARQUBE_ENV = 'sonarqube'
+        SONAR_TOKEN = credentials('sonar-credentials')
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -27,29 +30,24 @@ pipeline {
                 '''
             }
         }
-       /* stage('Static Analysis SonarCloud') {
-            agent { label 'agent1' }
-            environment {
-            SONAR_URL = "https://sonarcloud.io" // URL de SonarCloud
-            }
-            steps {
-                withCredentials([string(credentialsId: 'sonar-cloud-credentials', variable: 'SONAR_TOKEN')]) {
-                    sh '''
-                         mvn sonar:sonar \
-                        -Dsonar.login=${SONAR_TOKEN} \
-                        -Dsonar.host.url=${SONAR_URL} \
-                        -Dsonar.java.binaries=target/classes \
-                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                        -Dsonar.projectKey=5DS5-G1-stationsky \
-                        -Dsonar.organization=miranitta \
-                        -Dsonar.inclusions=/src/main/java/tn/esprit/spring/services/PisteServicesImpl.java \
-                        -Dsonar.test.inclusions=/src/test/java/tn/esprit/spring/services/PisteServicesImplTest.java
-                        '''
-                }
-            }
-        }
+      stage('SonarQube Analysis') {
+           agent { label 'agent1' }
+           steps {
+               script {
+                   withSonarQubeEnv("${SONARQUBE_ENV}") {
+                       sh """
+                           mvn sonar:sonar \
+                           -Dsonar.login=${SONAR_TOKEN} \
+                           -Dsonar.inclusions=src/main/java/tn/esprit/spring/services/** \
+                           -Dsonar.test.inclusions=src/test/java/tn/esprit/spring/services/** \
+                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                       """
+                   }
+               }
+           }
+       }
 
-
+/*
 
 stage('Upload to Nexus') {
             agent { label 'agent1' }
