@@ -63,7 +63,7 @@ stage('Upload to Nexus') {
                         nexusUrl: "192.168.33.11:9001",
                         groupId: 'tn.esprit.spring',
                         artifactId: '5DS5-G1-stationsky',
-                        version: '1.0',
+                        version: '1.1',
                         repository: "maven-central-repository",
                         credentialsId: "nexus-credentials",
                         artifacts: [
@@ -87,7 +87,7 @@ stage('Upload to Nexus') {
                     def nexusUrl = "http://192.168.33.11:9001"
                     def groupId = "tn.esprit.spring"
                     def artifactId = "5DS5-G1-stationsky"
-                    def version = "1.0"
+                    def version = "1.1"
 
                     sh """
                         docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} \
