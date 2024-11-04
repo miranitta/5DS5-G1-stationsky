@@ -16,6 +16,7 @@ services:
     depends_on:
       - mysqldb
     image: ilyesmarghli/stationsky:1.0.0
+    container_name: spring-app
     restart: on-failure
     ports:
       - 8089:8089
