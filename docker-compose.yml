@@ -1,27 +1,48 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql:latest
-    container_name: mysql-container
+    container_name: mysql
     environment:
-      MYSQL_DATABASE: stationsky
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stationsky
     ports:
       - "3306:3306"
     networks:
-      - stationsky-network
+      - my-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   backend:
-    image: rinedlazreg353/rinedlazreg-g1-stationsky:latest
+    image: seifallahfathalli353/353seifallahfathalli-g1-stationsky:0.0.1
     container_name: backend-container
     environment:
-      DATABASE_URL: jdbc:mysql://mysql:3306/stationsky
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stationsky?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5Dialect
+      SERVER_PORT: 9000
+      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: "true"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: prometheus
     ports:
       - "9000:9000"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
-      - stationsky-network
+      - my-network
 
 networks:
-  stationsky-network:  # Corrected network name
+  my-network:
     driver: bridge
+
+volumes:
+  mysql-data:

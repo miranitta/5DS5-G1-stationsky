@@ -6,7 +6,7 @@ pipeline {
     }
      environment {
         DOCKER_IMAGE = 'seifallahfathalli-g1-stationsky'  // Dynamic Docker image name
-        IMAGE_TAG = 'latest'  // Image tag (e.g., 'latest' or version)
+        IMAGE_TAG = '0.0.1'  // Image tag (e.g., 'latest' or version)
         SONARQUBE_ENV = 'sonarqube'
         SONAR_TOKEN = credentials('sonar-credentials')
     }
@@ -58,7 +58,7 @@ stage('Upload to Nexus') {
                         nexusUrl: "192.168.33.11:9001",
                         groupId: 'tn.esprit.spring',
                         artifactId: '5DS5-G1-stationsky',
-                        version: '1.0',
+                        version: '1.1',
                         repository: "maven-central-repository",
                         credentialsId: "nexus-credentials",
                         artifacts: [
@@ -82,7 +82,7 @@ stage('Upload to Nexus') {
                     def nexusUrl = "http://192.168.33.11:9001"
                     def groupId = "tn.esprit.spring"
                     def artifactId = "5DS5-G1-stationsky"
-                    def version = "1.0"
+                    def version = "1.1"
 
                     sh """
                         docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} \
@@ -109,7 +109,7 @@ stage('Upload to Nexus') {
                 }
             }
         }
-/*
+
   stage('Docker Compose Up') {
             agent { label 'agent1' }
             steps {
@@ -118,6 +118,6 @@ stage('Upload to Nexus') {
                 }
             }
         }            
-    }*/
+    
 }
 }
