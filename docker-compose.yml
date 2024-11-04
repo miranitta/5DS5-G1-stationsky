@@ -19,7 +19,7 @@ services:
       - mysql-data:/var/lib/mysql
 
   backend:
-    image: seifallahfathalli353/353seifallahfathalli-g1-stationsky:0.0.1
+    image: seifallahfathalli353/seifallahfathalli-g1-stationsky:0.0.1
     container_name: backend-container
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stationsky?createDatabaseIfNotExist=true
