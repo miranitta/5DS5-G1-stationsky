@@ -11,7 +11,7 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - mysqldb-data:/var/lib/mysql
+      - db:/var/lib/mysql
   app-stationsky:
     depends_on:
       - mysqldb
