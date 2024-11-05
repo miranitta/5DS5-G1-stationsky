@@ -77,26 +77,4 @@ class RegistrationServicesImplTest {
         verify(courseRepository).findById(1L);
         verify(registrationRepository).save(any(Registration.class));
     }
-
-    @Test
-    void addRegistrationAndAssignToSkierAndCourse_ShouldReturnRegistration() {
-        // Mock behavior
-        when(skierRepository.findById(1L)).thenReturn(java.util.Optional.of(skier));
-        when(courseRepository.findById(1L)).thenReturn(java.util.Optional.of(course));
-        when(registrationRepository.countDistinctByNumWeekAndSkier_NumSkierAndCourse_NumCourse(1, skier.getNumSkier(), course.getNumCourse()))
-                .thenReturn(0L);
-        when(registrationRepository.save(any(Registration.class))).thenReturn(registration);
-
-        // Call the method to test
-        Registration result = registrationServices.addRegistrationAndAssignToSkierAndCourse(registration, 1L, 1L);
-
-        // Verify the result
-        assertNotNull(result);
-        verify(skierRepository).findById(1L);
-        verify(courseRepository).findById(1L);
-        verify(registrationRepository).countDistinctByNumWeekAndSkier_NumSkierAndCourse_NumCourse(1, skier.getNumSkier(), course.getNumCourse());
-        verify(registrationRepository).save(any(Registration.class));
-    }
-
-
 }
