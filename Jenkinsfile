@@ -10,7 +10,7 @@ pipeline {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "192.168.50.4:8081"
-        NEXUS_REPOSITORY = "maven-central-repository"
+        NEXUS_REPOSITORY = "maven-releases"
         NEXUS_CREDENTIAL_ID = "nexusCredential"
         DOCKER_IMAGE = 'khiarianwar/anwarkhiari_5ds5'
         EMAIL_RECIPIENT = 'khiarianwar@gmail.com' // Replace with the actual email address
