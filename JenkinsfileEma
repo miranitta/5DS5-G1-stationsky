@@ -1,5 +1,5 @@
 pipeline {
-    agent any // Use any available agent
+    agent any
 
     environment {
         EMAIL_RECIPIENT = 'zakariazarrouk97@gmail.com' // Replace with the actual email address
@@ -9,18 +9,23 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // Add your build commands here, for example:
-                // sh 'mvn clean package' // For a Maven project
+                // Example build command:
+                // sh 'mvn clean package' // Adjust for your build tool
             }
         }
 
-        // Add the Send Email Notification stage
         stage('Send Email Notification') {
             steps {
-                echo 'Sending Email Notification...'
-                mail to: "${env.EMAIL_RECIPIENT}",
-                     subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
-                     body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
+                script {
+                    try {
+                        echo 'Sending Email Notification...'
+                        mail to: "${env.EMAIL_RECIPIENT}",
+                             subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
+                             body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
+                    } catch (Exception e) {
+                        echo "Error sending email: ${e.getMessage()}"
+                    }
+                }
             }
         }
     }
