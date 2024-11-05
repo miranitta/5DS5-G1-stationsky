@@ -50,17 +50,19 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonarscanner') { // Remplacez 'sonarscanner' par le nom correct de votre serveur SonarQube
-                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-                        sh '''mvn sonar:sonar \
-                            -Dsonar.projectKey=Devops-CICD \
-                            -Dsonar.login=${SONAR_TOKEN}'''
-                    }
-                }
+       stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('sonarscanner') {
+            withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+                sh '''mvn sonar:sonar \
+                    -Dsonar.projectKey=Devops-CICD \
+                    -Dsonar.login=${SONAR_TOKEN} \
+                    -Dsonar.ws.timeout=60 -X'''
             }
         }
+    }
+}
+
         
         stage('nexus') {
             steps {
