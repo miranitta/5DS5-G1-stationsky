@@ -27,6 +27,11 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
+        stage('TEST') {
+            steps {
+                sh 'mvn test'
+            }
+        }
 
         stage('MVN SONARQUBE') {
             steps {
@@ -104,6 +109,9 @@ pipeline {
     }
 
     post {
+        always {
+            junit '**/target/surefire-reports/test-*.xml'
+        }
         success {
             echo 'Build was successful!'
         }
