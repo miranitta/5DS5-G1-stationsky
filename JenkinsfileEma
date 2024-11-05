@@ -17,14 +17,14 @@ pipeline {
 
         stage('Send Email Notification') {
             steps {
-                script {
-                    try {
+                
+                    
                         echo 'Sending Email Notification...'
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
                              body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
-                    } 
-                }
+                    
+                
             }
         }
  stage('Send Test Email') {
