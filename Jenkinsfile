@@ -111,12 +111,35 @@ pipeline {
     post {
         always {
             junit '**/target/surefire-reports/test-*.xml'
+                    emailext (
+            to: 'ilyes.marghli@esprit.tn',
+            subject: "Build Notification: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+                Build Status: ${currentBuild.currentResult}<br>
+                Job: ${env.JOB_NAME}<br>
+                Build Number: ${env.BUILD_NUMBER}<br>
+                Check console output at <a href="${env.BUILD_URL}">this link</a> for details.
+            """,
+            mimeType: 'text/html'
+        )
         }
         success {
             echo 'Build was successful!'
+            emailext (
+            to: 'ilyes.marghli@esprit.tn',
+            subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: "The build was successful! Check it out: ${env.BUILD_URL}",
+            mimeType: 'text/plain'
+        )
         }
         failure {
             echo 'Build failed.'
+            emailext (
+            to: 'ilyes.marghli@esprit.tn',
+            subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: "The build has failed. Please check the details at: ${env.BUILD_URL}",
+            mimeType: 'text/plain'
+        )
         }
     }
 }
