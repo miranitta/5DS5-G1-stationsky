@@ -66,4 +66,15 @@ public class SkierRestController {
         return skierServices.retrieveAllSkiers();
     }
 
+    /*
+    {
+        "nomS": "rihab",
+        "prenomS": "idoudi",
+        "ville": "vvv"
+    }
+
+
+
+    */
+
 }
