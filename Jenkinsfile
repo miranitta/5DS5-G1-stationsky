@@ -27,11 +27,7 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('TEST') {
-            steps {
-                sh 'mvn test'
-            }
-        }
+
 
         stage('MVN SONARQUBE') {
             steps {
@@ -110,7 +106,6 @@ pipeline {
 
     post {
         always {
-            junit '**/target/surefire-reports/test-*.xml'
                     emailext (
             to: 'ilyes.marghli@esprit.tn',
             subject: "Build Notification: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
