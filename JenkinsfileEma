@@ -9,36 +9,17 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the project...'
-                // Example build command:
-                // sh 'mvn clean package' // Adjust for your build tool
+                // Your build steps go here
+                // For example: sh './build.sh'
             }
         }
-
 
         stage('Send Email Notification') {
             steps {
-                
-                    
-                        echo 'Sending Email Notification...'
-                        mail to: "${env.EMAIL_RECIPIENT}",
-                             subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
-                             body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
-                    
-                
-            }
-        }
- stage('Send Test Email') {
-            steps {
-                script {
-                    try {
-                        echo 'Sending Test Email...'
-                        mail to: "${env.EMAIL_RECIPIENT}",
-                             subject: "Test Jenkins Email",
-                             body: "This is a test email from Jenkins."
-                    } catch (Exception e) {
-                        echo "Error sending email: ${e.getMessage()}"
-                    }
-                }
+                echo 'Sending Email Notification...'
+                mail to: "${env.EMAIL_RECIPIENT}",
+                     subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
+                     body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
             }
         }
     }
