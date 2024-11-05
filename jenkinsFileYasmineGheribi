@@ -56,8 +56,7 @@ pipeline {
             withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
                 sh '''mvn sonar:sonar \
                     -Dsonar.projectKey=Devops-CICD \
-                    -Dsonar.login=${SONAR_TOKEN} \
-                    -Dsonar.ws.timeout=60 -X'''
+                    -Dsonar.login=${SONAR_TOKEN} '''
             }
         }
     }
