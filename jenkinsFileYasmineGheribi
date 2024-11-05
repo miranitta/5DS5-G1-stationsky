@@ -50,38 +50,30 @@ pipeline {
             }
         }
 
-       
         stage('SonarQube Analysis') {
             steps {
-                
-                     withSonarQubeEnv('sonarscanner') { // Replace 'SonarQubeServer' with your actual SonarQube server name in Jenkins
-                        withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-                            sh '''mvn sonar:sonar \
-                                -Dsonar.projectKey=Devops-CICD \
-                                -Dsonar.login=${SONAR_TOKEN}'''
-                        
+                withSonarQubeEnv('sonarscanner') { // Remplacez 'sonarscanner' par le nom correct de votre serveur SonarQube
+                    withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
+                        sh '''mvn sonar:sonar \
+                            -Dsonar.projectKey=Devops-CICD \
+                            -Dsonar.login=${SONAR_TOKEN}'''
                     }
                 }
-               
             }
         }
-           stage('nexus') {
-    steps {
-        script {
-            if (fileExists('pom.xml')) {
-                // Ajoute -DskipTests=true pour ignorer les tests
-                sh "mvn deploy -DskipTests=true"
-            } else {
-                error 'pom.xml not found in the current directory.'
+        
+        stage('nexus') {
+            steps {
+                script {
+                    if (fileExists('pom.xml')) {
+                        // Ajoute -DskipTests=true pour ignorer les tests
+                        sh "mvn deploy -DskipTests=true"
+                    } else {
+                        error 'pom.xml not found in the current directory.'
+                    }
+                }
             }
         }
-    }
-}
-
-        }
-
-
-    
     }
 
     post {
