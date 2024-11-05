@@ -14,6 +14,7 @@ pipeline {
             }
         }
 
+
         stage('Send Email Notification') {
             steps {
                 script {
@@ -22,6 +23,18 @@ pipeline {
                         mail to: "${env.EMAIL_RECIPIENT}",
                              subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
                              body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
+                    } 
+                }
+            }
+        }
+ stage('Send Test Email') {
+            steps {
+                script {
+                    try {
+                        echo 'Sending Test Email...'
+                        mail to: "${env.EMAIL_RECIPIENT}",
+                             subject: "Test Jenkins Email",
+                             body: "This is a test email from Jenkins."
                     } catch (Exception e) {
                         echo "Error sending email: ${e.getMessage()}"
                     }
