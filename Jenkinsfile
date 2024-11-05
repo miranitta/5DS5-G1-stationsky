@@ -2,11 +2,17 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JAVA_HOME'
-        maven 'M2_HOME'
+        jdk 'JAVA_HOME' // Assurez-vous que 'JAVA_HOME' est configuré dans Jenkins pour Java
+        maven 'M2_HOME' // Assurez-vous que 'M2_HOME' est configuré dans Jenkins pour Maven
     }
 
     stages {
+        stage('Hello Stage') {
+            steps {
+                echo 'Hello, I am StationSki Project from GitHub'
+            }
+        }
+
         stage('GIT') {
             steps {
                 git branch: 'yasminegheribi-G1-stationsky',
@@ -14,25 +20,65 @@ pipeline {
             }
         }
 
-        stage('Compile Stage') {
+        stage('Clean') {
             steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean'
             }
         }
-        
-        stage('SonarQube Analysis') {
+
+        stage('Compile') {
             steps {
-                
-                     withSonarQubeEnv('sonarscanner') { // Replace 'SonarQubeServer' with your actual SonarQube server name in Jenkins
-                        withCredentials([string(credentialsId: 'sonartoken', variable: 'SONAR_TOKEN')]) {
-                            sh '''mvn sonar:sonar \
-                                -Dsonar.projectKey=Devops-CICD \
-                                -Dsonar.login=${SONAR_TOKEN}'''
-                        
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test -DskipTests'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package -DskipTests'
+            }
+        }
+
+        stage('Install') {
+            steps {
+                sh 'mvn install -DskipTests'
+            }
+        }
+
+       
+        
+        stage('nexus') {
+            steps {
+                script {
+                    if (fileExists('pom.xml')) {
+                        // Ajoute -DskipTests=true pour ignorer les tests
+                        sh "mvn deploy -DskipTests=true"
+                    } else {
+                        error 'pom.xml not found in the current directory.'
                     }
                 }
-               
             }
+        }
+    stage('Grafana') {
+            steps {
+                sh 'docker start prometheus'
+                sh 'docker start grafana'
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed. Check the logs for more details.'
         }
     }
 }
