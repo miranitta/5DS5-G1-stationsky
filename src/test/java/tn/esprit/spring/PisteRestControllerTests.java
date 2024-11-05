@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import tn.esprit.spring.entities.Piste;
+import tn.esprit.spring.entities.Color;
 import tn.esprit.spring.services.IPisteServices;
 import tn.esprit.spring.controllers.PisteRestController;
 

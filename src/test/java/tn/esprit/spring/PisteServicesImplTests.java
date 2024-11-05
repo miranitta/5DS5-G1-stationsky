@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import tn.esprit.spring.entities.Piste;
+import tn.esprit.spring.entities.Color;
 import tn.esprit.spring.repositories.IPisteRepository;
 import tn.esprit.spring.services.PisteServicesImpl;
 public class PisteServicesImplTests {
