@@ -8,4 +8,4 @@ EXPOSE 8089
 COPY target/gestion-station-ski-1.0.jar gestion-station-ski-1.0.jar
 
 # Command to run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "/app/gestion-station-ski-1.0.jar"]
+ENTRYPOINT ["java", "-jar", "/gestion-station-ski-1.0.jar"]
