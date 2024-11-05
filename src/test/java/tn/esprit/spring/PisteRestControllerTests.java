@@ -15,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import tn.esprit.spring.entities.Piste;
 import tn.esprit.spring.services.IPisteServices;
+import tn.esprit.spring.controllers.PisteRestController;
+
 
 import java.util.Arrays;
 import java.util.List;
