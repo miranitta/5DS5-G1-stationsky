@@ -65,6 +65,23 @@ pipeline {
                
             }
         }
+           stage('nexus') {
+    steps {
+        script {
+            if (fileExists('pom.xml')) {
+                // Ajoute -DskipTests=true pour ignorer les tests
+                sh "mvn deploy -DskipTests=true"
+            } else {
+                error 'pom.xml not found in the current directory.'
+            }
+        }
+    }
+}
+
+        }
+
+
+    
     }
 
     post {
