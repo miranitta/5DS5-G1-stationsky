@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JAVA_HOME' // Assurez-vous que 'JAVA_HOME' est configuré dans Jenkins pour Java
+        maven 'M2_HOME' // Assurez-vous que 'M2_HOME' est configuré dans Jenkins pour Maven
+    }
+
+    stages {
+        stage('Hello Stage') {
+            steps {
+                echo 'Hello, I am StationSki Project from GitHub'
+            }
+        }
+
+        stage('GIT') {
+            steps {
+                git branch: 'yasminegheribi-G1-stationsky',
+                    url: 'https://github.com/miranitta/5DS5-G1-stationsky.git'
+            }
+        }
+
+       
+
+       
+
+        stage('Install') {
+            steps {
+                sh 'mvn install -DskipTests'
+            }
+        }
+
+       
+        
+        stage('nexus') {
+            steps {
+                script {
+                    if (fileExists('pom.xml')) {
+                        // Ajoute -DskipTests=true pour ignorer les tests
+                        sh "mvn deploy -DskipTests=true"
+                    } else {
+                        error 'pom.xml not found in the current directory.'
+                    }
+                }
+            }
+        }
+    stage('Grafana') {
+            steps {
+                sh 'docker start prometheus'
+                sh 'docker start grafana'
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed. Check the logs for more details.'
+        }
+    }
+}

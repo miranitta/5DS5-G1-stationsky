@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        EMAIL_RECIPIENT = 'zakariazarrouk97@gmail.com' // Replace with the actual email address
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building the project...'
+                // Your build steps go here
+                // For example: sh './build.sh'
+            }
+        }
+
+        stage('Send Email Notification') {
+            steps {
+                echo 'Sending Email Notification...'
+                mail to: "${env.EMAIL_RECIPIENT}",
+                     subject: "Jenkins Pipeline: Build ${currentBuild.fullDisplayName}",
+                     body: "The build ${currentBuild.fullDisplayName} has finished with status: ${currentBuild.currentResult}"
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs() // Cleans the workspace after build
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+            mail to: "${env.EMAIL_RECIPIENT}",
+                 subject: "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
+                 body: "Good news! The build ${currentBuild.fullDisplayName} completed successfully."
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs.'
+            mail to: "${env.EMAIL_RECIPIENT}",
+                 subject: "Jenkins Pipeline Failure: ${currentBuild.fullDisplayName}",
+                 body: "The build ${currentBuild.fullDisplayName} failed. Please check the Jenkins logs for details."
+        }
+    }
+}
