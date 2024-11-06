@@ -43,6 +43,13 @@ pipeline {
                 sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
             }
         }
+         stage('Run Mockito Tests') {
+            steps {
+                echo 'Running Mockito Tests...'
+                sh 'mvn -Dtest=SkierServiceImplTestMockito test'
+            }
+        }
+
 
 
         stage('Package') {
