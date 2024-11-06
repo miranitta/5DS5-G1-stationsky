@@ -20,7 +20,7 @@ services:
     container_name: spring-application
     restart: on-failure
     ports:
-      - "8088:8088"  # Maps port 8089 on host to 8089 on container
+      - "8089:8089"  # Maps port 8089 on host to 8089 on container
     depends_on:
       - mysqldb
     environment:
