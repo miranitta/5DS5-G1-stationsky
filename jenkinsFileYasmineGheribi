@@ -108,7 +108,7 @@ pipeline {
             }
         }
 
-    }
+    
 stage('Send Email Notification') {
             steps {
                 echo 'Sending Email Notification...'
