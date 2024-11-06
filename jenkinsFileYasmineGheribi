@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+        EMAIL_RECIPIENT = 'zakariazarrouk97@gmail.com' // Replace with the actual email address
+    }
+
 
     tools {
         jdk 'JAVA_HOME' // Assurez-vous que 'JAVA_HOME' est configuré dans Jenkins pour Java
