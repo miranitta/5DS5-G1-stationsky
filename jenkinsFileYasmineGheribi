@@ -37,6 +37,13 @@ pipeline {
                 sh 'mvn test -DskipTests'
             }
         }
+        stage('Run JUnit Tests') {
+            steps {
+                echo 'Running JUnit Tests...'
+                sh 'mvn -Dtest=SkierServiceImplTestJUnit test'
+            }
+        }
+
 
         stage('Package') {
             steps {
