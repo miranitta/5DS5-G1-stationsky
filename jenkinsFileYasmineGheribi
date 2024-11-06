@@ -49,6 +49,14 @@ pipeline {
                  sh 'mvn clean install -DskipTests' 
             }
         }
+        stage('Check Build Output') {
+    steps {
+        script {
+            sh 'pwd'
+            sh 'ls -la'
+        }
+    }
+}
 
        stage('SonarQube Analysis') {
     steps {
